@@ -63,11 +63,11 @@ Usage:
       builddir [options] [baseName]
 where [options] are:
 EOS
-    opt :build,         "Switch to the build directory"
+    opt :build,         "Get the build directory"
     opt :buildBaseDir,  "Base directory for the build directories", :default => "/static_tmp/mario/build"
     opt :create,        "Create build directory if necessary"
     opt :help,          "Display this help message"
-    opt :source,        "Switch to the source directory"
+    opt :source,        "Get the source directory"
     opt :verbose,       "Verbose mode for debugging"
   end
   opts = {}
