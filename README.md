@@ -6,7 +6,6 @@
     alias builddir='source builddir_script'
     alias cds='builddir -s'
     alias cdb='builddir -cb'
-    alias cmake='source cmake_script'
 
 ### TODO: ###
 * add documentation

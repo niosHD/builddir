@@ -12,7 +12,7 @@ eval "$( $COMMAND -s 2> >(t_err="$(cat)"; typeset -p t_err) > >(t_std="$(cat)"; 
 
 # tell cmake the source directory if there is no error
 if [ $t_ret -eq 0 ]; then
-  \cmake "${t_std}" $@
+  /usr/bin/cmake "${t_std}" $@
 else
-  \cmake $@
+  /usr/bin/cmake $@
 fi
