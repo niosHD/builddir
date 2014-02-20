@@ -66,7 +66,10 @@ EOS
     opt :build,         "Get the build directory"
     opt :buildBaseDir,  "Base directory for the build directories", :default => "/static_tmp/mario/build"
     opt :create,        "Create build directory if necessary"
+    opt :delete,        "remove + delete the build directory."
     opt :help,          "Display this help message"
+    opt :purge,         "Delete all abandoned build directories without mapping"
+    opt :remove,        "Remove connection between the src and the build directory"
     opt :source,        "Get the source directory"
     opt :verbose,       "Verbose mode for debugging"
   end
@@ -96,19 +99,43 @@ EOS
     exit -1
   end
   
+  if (opts[:create] || opts[:build] || opts[:source]) && (opts[:delete] || opts[:remove])
+    puts "ERROR! This combination of options is not allowed!"
+  end
+  
   mapping = loadMapping(mappingsFile)
   puts "WARNING! Mappings could not be loaded." if mapping == nil && opts[:verbose]
   mapping ||= []
   
   entry = findMapping(mapping, currentDir)
-  if entry == nil && !opts[:create]
+  if opts[:purge]
+    buildDirs = Dir[File.join(opts[:buildBaseDir], "*")].select{|file| File.directory?(file)}
+    buildDirs.each do |directory|
+      entry = findMapping(mapping, directory)
+      if entry == nil
+        puts "Deleting: #{directory}"
+        FileUtils.rm_rf(directory)
+      end
+    end
+    exit 0
+  elsif entry == nil && !opts[:create]
     puts "ERROR! No SrcDir <-> BuildDir mapping could be found."
     exit -1
+  elsif opts[:delete] || opts[:remove]
+    puts "Removing mapping: #{entry[:srcDir]} <-> #{entry[:buildDir]}"
+    mapping.delete_at(entry[:index])
+    saveMapping(mapping,mappingsFile)
+    if opts[:delete] && File.exists?(entry[:buildDir])
+      puts "Deleting build directory: #{entry[:buildDir]}"
+      FileUtils.rm_rf(entry[:buildDir])
+    end
+    exit 0
   elsif entry == nil
     buildDir = createBuildDir(opts[:buildBaseDir],baseName)
     mapping << [ currentDir, buildDir ]
     puts "New Mapping: #{currentDir} <-> #{buildDir}" if opts[:verbose]
     entry = { :srcDir => currentDir, :buildDir => buildDir, :index => mapping.size-1, :type => :SRC_DIR }
+    saveMapping(mapping,mappingsFile)
   elsif opts[:verbose]
     puts "Mapping Found: #{entry[:srcDir]} <-> #{entry[:buildDir]}"
   end
@@ -118,8 +145,6 @@ EOS
     puts "Creating build directory" if opts[:verbose]
     FileUtils.mkdir_p(entry[:buildDir])
   end
-  
-  saveMapping(mapping,mappingsFile)
   
   dstDir = entry[:srcDir]
   if opts[:build] || (!opts[:build] && !opts[:source] && entry[:type] == :SRC_DIR)
