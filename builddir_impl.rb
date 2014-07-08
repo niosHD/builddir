@@ -63,8 +63,9 @@ Usage:
       builddir [options] [baseName]
 where [options] are:
 EOS
+    defaultBaseDir = ENV['DEFAULT_BUILD_DIR'] || "/static_tmp/mario/build"
     opt :build,         "Get the build directory"
-    opt :buildBaseDir,  "Base directory for the build directories", :default => "/static_tmp/mario/build"
+    opt :buildBaseDir,  "Base directory for the build directories", :default => defaultBaseDir
     opt :create,        "Create build directory if necessary"
     opt :delete,        "remove + delete the build directory."
     opt :help,          "Display this help message"

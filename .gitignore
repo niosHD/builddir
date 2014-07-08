@@ -27,3 +27,5 @@ nbproject
 
 # ignore all _ prefixed directories (usually used for generated directories)
 _*/
+Gemfile.lock
+
