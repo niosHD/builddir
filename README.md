@@ -5,12 +5,15 @@
 ### Installation
 * Install dependencies using bundle (`bundle install`)
 * Symlink the scripts or add the directory to the PATH
-* Define the build directory by exporting the DEFAULT_BUILD_DIR
+* Define the build directory root by exporting the DEFAULT_BUILD_DIR
 
 ### Bash Aliases
     alias bdir='source builddir_script'
     alias cds='bdir -s'
     alias cdb='bdir -cb'
+    alias cmake='builddir_cmake'
+    alias configure='builddir_configure'
+
 
 ### TODO: ###
 * add documentation
