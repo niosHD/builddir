@@ -1,7 +1,7 @@
 #!/bin/bash
 
 COMMAND="builddir_impl.rb"
-OPTIONS=$@
+OPTIONS=("$@")
 APPEND_SRC_DIR=1
 
 # check if the --build flag has been specified
@@ -24,8 +24,8 @@ eval "$( $COMMAND -s 2> >(t_err="$(cat)"; typeset -p t_err) > >(t_std="$(cat)"; 
 
 # tell cmake the source directory if there is no error
 if [ $t_ret -eq 0 ] && [ $APPEND_SRC_DIR -eq 1 ]; then
-  /usr/bin/cmake $OPTIONS "${t_std}"
+  cmake "${OPTIONS[@]}" "${t_std}"
 else
-  /usr/bin/cmake $OPTIONS
+  cmake "${OPTIONS[@]}"
 fi
 
