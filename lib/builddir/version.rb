@@ -1,3 +1,4 @@
 module Builddir
-  VERSION = "0.1.0"
+	NAME = 'builddir'
+  VERSION = "0.1.0.pre"
 end

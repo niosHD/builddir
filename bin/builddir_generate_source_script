@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'trollop'
+
+require 'builddir'
+
+p = Trollop::Parser.new do
+	version "#{Builddir::NAME} Version #{Builddir::VERSION}"
+	banner <<-EOS
+Generates the script which has to be sourced to change change directories with builddir.
+
+Usage:
+		#{$0} [options] [TargetFile]
+
+where [options] are:
+EOS
+end
+
+opts = {}
+Trollop::with_standard_exception_handling p do
+	opts = p.parse ARGV
+	raise Trollop::HelpNeeded if ARGV.size() > 1 # show help screen
+end
+
+file_path = File.join(Builddir.gem_libdir, "data", "builddir_source_script")
+
+# write file content to stdout
+if ARGV.size == 0
+	puts File.read(file_path)
+
+# write file content to another file
+else
+	FileUtils.cp(file_path, ARGV[0])
+end
+
+exit 0
+

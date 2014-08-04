@@ -3,7 +3,6 @@ require 'fileutils'
 require 'pathname'
 require 'trollop'
 
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'builddir'
 
 def createBuildDirPath(baseDir,baseName)
@@ -17,9 +16,10 @@ end
 # redirect stdout to stderr
 $stdout = $stderr
 
-buildBaseDir = ENV['DEFAULT_BUILD_DIR'] || "/tmp/builddir"
+buildBaseDir = ENV['DEFAULT_BUILDDIR'] || "/tmp/builddir"
 
 p = Trollop::Parser.new do
+	version "#{Builddir::NAME} Version #{Builddir::VERSION}"
 	banner <<-EOS
 Usage:
 		builddir [options] [baseName]
@@ -32,7 +32,7 @@ EOS
 	opt :purge,         "Delete all abandoned build directories without mapping"
 	opt :remove,        "Remove connection between the src and the build directory"
 	opt :source,        "Get the source directory"
-	opt :verbose,       "Verbose mode for debugging"
+	opt :verbose,       "Verbose mode for debugging", :short => "V"
 end
 
 opts = {}

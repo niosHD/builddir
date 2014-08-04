@@ -1,4 +1,5 @@
 require "builddir/version"
+require "builddir/utils"
 
 require 'pathname'
 require 'yaml'
