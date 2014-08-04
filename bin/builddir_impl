@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'pathname'
+require 'trollop'
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'builddir'
+
+def createBuildDirPath(baseDir,baseName)
+   basePath = Pathname.new("#{baseDir}/#{baseName}")
+   return basePath.to_s unless File.exists?(basePath)
+   i = 1
+   while File.exists?(basePath.to_s + i.to_s) do i += 1 end
+   return basePath.to_s + i.to_s
+end
+
+# redirect stdout to stderr
+$stdout = $stderr
+
+buildBaseDir = ENV['DEFAULT_BUILD_DIR'] || "/tmp/builddir"
+
+p = Trollop::Parser.new do
+	banner <<-EOS
+Usage:
+		builddir [options] [baseName]
+where [options] are:
+EOS
+	opt :build,         "Get the build directory"
+	opt :create,        "Create build directory if necessary"
+	opt :delete,        "remove + delete the build directory."
+	opt :help,          "Display this help message"
+	opt :purge,         "Delete all abandoned build directories without mapping"
+	opt :remove,        "Remove connection between the src and the build directory"
+	opt :source,        "Get the source directory"
+	opt :verbose,       "Verbose mode for debugging"
+end
+
+opts = {}
+Trollop::with_standard_exception_handling p do
+	opts = p.parse ARGV
+	raise Trollop::HelpNeeded if ARGV.size() > 1 # show help screen
+end
+currentDir = Dir.pwd
+
+mappingsFile = "#{buildBaseDir}/builddir_mapping.yml"
+baseName = File.basename(currentDir)
+baseName = File.basename(ARGV[0]) unless ARGV.empty?
+
+if opts[:verbose]
+	puts "Current Directory   : #{currentDir}"
+	puts "Build Base Directory: #{buildBaseDir}"
+	puts "Mappings File       : #{mappingsFile}"
+	puts "Basename            : #{baseName}"
+	puts ""
+end
+
+if opts[:build] && opts[:source]
+	puts "ERROR! Can not switch to source and build simultaneously."
+	exit -1
+end
+
+if (opts[:create] || opts[:build] || opts[:source]) && (opts[:delete] || opts[:remove])
+	puts "ERROR! This combination of options is not allowed!"
+	exit -1
+end
+
+mapping = Builddir.loadMapping(mappingsFile)
+puts "WARNING! Mappings could not be loaded." if mapping == nil && opts[:verbose]
+mapping ||= []
+
+entry = Builddir.findMapping(mapping, currentDir)
+if opts[:purge]
+	buildDirs = Dir[File.join(buildBaseDir, "*")].select{|file| File.directory?(file)}
+	buildDirs.each do |directory|
+		entry = Builddir.findMapping(mapping, directory)
+		if entry == nil
+			puts "Deleting: #{directory}"
+			FileUtils.rm_rf(directory)
+		end
+	end
+	exit 0
+elsif entry == nil && !opts[:create]
+	puts "ERROR! No SrcDir <-> BuildDir mapping could be found."
+	exit -1
+elsif opts[:delete] || opts[:remove]
+	puts "Removing mapping: #{entry[:srcDir]} <-> #{entry[:buildDir]}"
+	mapping.delete_at(entry[:index])
+	Builddir.saveMapping(mapping,mappingsFile)
+	if opts[:delete] && File.exists?(entry[:buildDir])
+		puts "Deleting build directory: #{entry[:buildDir]}"
+		FileUtils.rm_rf(entry[:buildDir])
+	end
+	exit 0
+elsif entry == nil
+	buildDir = createBuildDirPath(buildBaseDir,baseName)
+	mapping << [ currentDir, buildDir ]
+	puts "New Mapping: #{currentDir} <-> #{buildDir}" if opts[:verbose]
+	entry = { :srcDir => currentDir, :buildDir => buildDir, :index => mapping.size-1, :type => :SRC_DIR }
+	Builddir.saveMapping(mapping,mappingsFile)
+elsif opts[:verbose]
+	puts "Mapping Found: #{entry[:srcDir]} <-> #{entry[:buildDir]}"
+end
+
+# create the directory when needed
+unless File.exists?(entry[:buildDir])
+	puts "Creating build directory" if opts[:verbose]
+	FileUtils.mkdir_p(entry[:buildDir])
+end
+
+dstDir = entry[:srcDir]
+if opts[:build] || (!opts[:build] && !opts[:source] && entry[:type] == :SRC_DIR)
+	dstDir = entry[:buildDir]
+end
+puts "Change directory to: #{dstDir}" if opts[:verbose]
+STDOUT.puts dstDir
+exit 0

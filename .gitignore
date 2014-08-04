@@ -1,31 +1,22 @@
-# various unwanted files (backups, objects, cmake artifacts)
-*~
-*.o
-*.kate-swp
-*.swp
-.#*
-\#*#
-CMakeCache.txt
-Makefile
-CMakeFiles
-/build*/
-/_build*/
-*.res
-
-# eclipse project files
-.settings
-.project
-.cproject
-.cdtproject
-.cdtbuild
-
-# netbeans project files
-/dist/
-Makefile
-.dep.inc
-nbproject
-
-# ignore all _ prefixed directories (usually used for generated directories)
-_*/
+*.gem
+*.rbc
+.bundle
+.config
+.yardoc
 Gemfile.lock
-
+InstalledFiles
+_yardoc
+coverage
+doc/
+lib/bundler/man
+pkg
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
+*.bundle
+*.so
+*.o
+*.a
+mkmf.log
