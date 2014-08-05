@@ -1,3 +1,8 @@
+## 0.1.1 (2014-08-05)
+
+Bugfixes:
+
+  - fixed namespace and directory creation in the saveMapping function
  
 ## 0.1.0 (2014-08-05)
 
