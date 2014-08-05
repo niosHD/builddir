@@ -1,6 +1,7 @@
 require "builddir/version"
 require "builddir/utils"
 
+require 'fileutils'
 require 'pathname'
 require 'yaml'
 
@@ -24,7 +25,13 @@ module Builddir
 	#
 	# @param mapping [Array<Array(String, String)>] the mapping which should be saved
 	# @param file [String] path of the mapping file
-	def saveMapping(mapping, file)
+	def Builddir.saveMapping(mapping, file = nil)
+		file = getMappingsFilePath() if file.nil?
+		
+		# create the directory when needed
+		dirname = File.dirname(file)
+		FileUtils.mkdir_p(dirname) unless File.exists?(dirname)
+		
 		File.open(file, 'w') do |f|
 			f.write mapping.to_yaml
 		end
