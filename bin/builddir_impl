@@ -16,8 +16,6 @@ end
 # redirect stdout to stderr
 $stdout = $stderr
 
-buildBaseDir = ENV['DEFAULT_BUILDDIR'] || "/tmp/builddir"
-
 p = Trollop::Parser.new do
 	version "#{Builddir::NAME} Version #{Builddir::VERSION}"
 	banner <<-EOS
@@ -42,7 +40,8 @@ Trollop::with_standard_exception_handling p do
 end
 currentDir = Dir.pwd
 
-mappingsFile = "#{buildBaseDir}/builddir_mapping.yml"
+mappingsFile = Builddir.getMappingsFilePath()
+buildBaseDir = Builddir.getBuildBasePath()
 baseName = File.basename(currentDir)
 baseName = File.basename(ARGV[0]) unless ARGV.empty?
 

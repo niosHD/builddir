@@ -63,4 +63,11 @@ module Builddir
 		return nil
 	end
 	
+	def Builddir.getBuildBasePath()
+		return ENV['DEFAULT_BUILDDIR'] || "/tmp/builddir"
+	end
+	
+	def Builddir.getMappingsFilePath()
+		return File.join(getBuildBasePath(),"builddir_mapping.yml")
+	end
 end

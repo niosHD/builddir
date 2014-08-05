@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'builddir/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "builddir"
+  spec.name          = Builddir::NAME
   spec.version       = Builddir::VERSION
   spec.authors       = ["Mario Werner"]
   spec.email         = ["mario.werner@iaik.tugraz.at"]
@@ -19,7 +19,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.bindir        = "bin"
 
+  spec.post_install_message = "Thank you for installing builddir.\n\nPlease follow the remaining installation steps from the README (#{spec.homepage}) to finish the installation.\n\n"
+
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
-	spec.add_runtime_dependency "trollop", "~> 2.0"
+  spec.add_runtime_dependency "trollop", "~> 2.0"
 end

@@ -26,13 +26,13 @@ following bash aliases.
     alias cdb='builddir -cb'
     alias cmake='builddir_cmake'
     alias configure='builddir_configure'
-    
+
 Fourth, define the build directory root by exporting the `DEFAULT_BUILDDIR`
 environment variable. When `DEFAULT_BUILDDIR` is not defined then
 `/tmp/builddir` is used as default.
 
     export DEFAULT_BUILDDIR="<path to the builddir>"
-    
+
 It is highly recommended to add the alias definitions and the environment
 variable definition to the configuration file
 (`~/.bashrc`, `~/.zshrc.local`, ...) of the used shell to make them permanent. 
