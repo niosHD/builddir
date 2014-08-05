@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+require 'builddir'
+
+# figure out if the src path is needed
+src_dir = nil
+append_src_dir = true
+
+# blacklist all flags where concatination of the src dir is not desired
+append_src_dir = false if ARGV.any? { |val| val =~ /(^-[hH]$)|(^\/\?$)|(^-help$)|(^-usage$)|(^--help)/ } 
+append_src_dir = false if ARGV.any? { |val| val =~ /(^\/V$)|(^--?version$)/ }
+append_src_dir = false if ARGV.any? { |val| val =~ /^--copyright$/ }
+append_src_dir = false if ARGV.any? { |val| val =~ /^--system-information$/ }
+append_src_dir = false if ARGV.any? { |val| val =~ /^--build$/ }
+append_src_dir = false if ARGV.any? { |val| val =~ /^-E$/ }
+
+if append_src_dir
+	# try to find a mapping
+	mapping = Builddir.loadMapping()
+	mapping ||= []
+	
+	currentDir = Dir.pwd
+	entry = Builddir.findExactMapping(mapping,currentDir)
+	src_dir = entry[:srcDir] unless entry.nil? || entry[:type] != :BUILD_DIR
+end
+
+unless src_dir.nil?
+	system 'cmake', *ARGV, src_dir
+else
+	system 'cmake', *ARGV
+end
+exit $?.exitstatus

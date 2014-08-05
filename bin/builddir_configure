@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+require 'builddir'
+
+# figure out if the src path is needed
+config_file = nil
+
+# try to find a mapping
+mapping = Builddir.loadMapping()
+mapping ||= []
+currentDir = Dir.pwd
+entry = Builddir.findExactMapping(mapping,currentDir)
+config_file = File.join(entry[:srcDir],"configure") unless entry.nil? || entry[:type] != :BUILD_DIR
+
+# execute the configure file in the source directory if on exists
+unless config_file.nil? || !File.exists?(config_file)
+	system config_file, *ARGV
+else
+	system 'configure', *ARGV
+end
+exit $?.exitstatus

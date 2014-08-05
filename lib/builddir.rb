@@ -10,7 +10,8 @@ module Builddir
 	#
 	# @param file [String] path of the mapping file
 	# @return [nil, Array<Array(String, String)>] The loaded mapping. nil on error
-	def Builddir.loadMapping(file)
+	def Builddir.loadMapping(file = nil)
+		file = getMappingsFilePath() if file.nil?
 		begin
 			mapping = YAML::load_file(file)
 		rescue
