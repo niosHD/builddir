@@ -70,11 +70,15 @@ module Builddir
 		end
 		return nil
 	end
-	
+
+	# Determine the build directory base path
+	# @return [String] the base path for the build directories
 	def Builddir.getBuildBasePath()
 		return ENV['DEFAULT_BUILDDIR'] || "/tmp/builddir"
 	end
-	
+
+	# Determine path to the mapping file
+	# @return [String] the path to the mapping file
 	def Builddir.getMappingsFilePath()
 		return File.join(getBuildBasePath(),"builddir_mapping.yml")
 	end
