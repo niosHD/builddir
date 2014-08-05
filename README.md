@@ -44,4 +44,4 @@ TODO: Document the different operations
 ## TODO:
 * add documentation
 * add unit tests
-* support multiple build directories
+* support multiple build directories?
