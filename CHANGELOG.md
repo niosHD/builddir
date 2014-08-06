@@ -1,3 +1,9 @@
+## 0.1.2.pre
+
+Features:
+
+  - added some usage documentation to the README
+
 ## 0.1.1 (2014-08-05)
 
 Bugfixes:
