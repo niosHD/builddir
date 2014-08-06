@@ -5,12 +5,20 @@ require 'trollop'
 
 require 'builddir'
 
+# Generate a non existing build directory path given a base name
+#
+# The function simply appends a count to the base name until a path which
+# does not exist has been found.
+#
+# @param baseDir [String] path to the build directory root
+# @param baseName [String] base name for the build directory
+# @return [String] path to the new directory
 def createBuildDirPath(baseDir,baseName)
-   basePath = Pathname.new("#{baseDir}/#{baseName}")
-   return basePath.to_s unless File.exists?(basePath)
-   i = 1
-   while File.exists?(basePath.to_s + i.to_s) do i += 1 end
-   return basePath.to_s + i.to_s
+	basePath = Pathname.new(File.join(baseDir,baseName))
+	return basePath.to_s unless File.exists?(basePath)
+	i = 1
+	while File.exists?(basePath.to_s + i.to_s) do i += 1 end
+	return basePath.to_s + i.to_s
 end
 
 # redirect stdout to stderr
