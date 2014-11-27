@@ -2,6 +2,7 @@
 
 Features:
 
+  - extended the `builddir_cmake` helper with an option for toolchain files (`-A`)
   - added some usage documentation to the README
 
 ## 0.1.1 (2014-08-05)

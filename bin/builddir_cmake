@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 require 'builddir'
 
-# figure out if the src path is needed
-src_dir = nil
+# figure out if the src path which should be added to the real cmake invocation
 append_src_dir = true
 
 # blacklist all flags where concatination of the src dir is not desired
@@ -13,17 +12,43 @@ append_src_dir = false if ARGV.any? { |val| val =~ /^--system-information$/ }
 append_src_dir = false if ARGV.any? { |val| val =~ /^--build$/ }
 append_src_dir = false if ARGV.any? { |val| val =~ /^-E$/ }
 
-if append_src_dir
+# add an option (-A <ARCH_NAME>) to specify an architecture for cross compilation
+# this option is expanded into a CMAKE_TOOLCHAIN_FILE when it can be found
+# in <src_dir>/cmake/toolchains
+arch_idx = ARGV.index('-A')
+arch_idx = nil if arch_idx == ARGV.length-1
+
+# try to find the src path if needed
+src_dir = nil
+if append_src_dir or arch_idx
 	# try to find a mapping
 	mapping = Builddir.loadMapping()
 	mapping ||= []
-	
+
 	currentDir = Dir.pwd
 	entry = Builddir.findExactMapping(mapping,currentDir)
-	src_dir = entry[:srcDir] unless entry.nil? || entry[:type] != :BUILD_DIR
+	src_dir = entry[:srcDir] if entry && entry[:type] == :BUILD_DIR
+
+	if arch_idx and src_dir.nil?
+		$stderr.puts "ERROR! No SrcDir <-> BuildDir mapping could be found."
+		$stderr.puts "The -A option is only usable in a builddir managed build directory."
+		exit -1
+	end
 end
 
-unless src_dir.nil?
+# rewrite the -A option in ARGV to something meaningful for cmake
+if arch_idx
+	toolchain_file = "#{src_dir}/cmake/toolchain/#{ARGV[arch_idx + 1]}.cmake"
+	unless File.file?(toolchain_file)
+		$stderr.puts "ERROR! Toolchain file (#{toolchain_file}) does not exist."
+		exit -1
+	end
+	# delete the parameter of -A and rewrite -A itself
+	ARGV.delete_at arch_idx + 1
+	ARGV[arch_idx] = "-DCMAKE_TOOLCHAIN_FILE=#{toolchain_file}"
+end
+
+if append_src_dir and src_dir
 	system 'cmake', *ARGV, src_dir
 else
 	system 'cmake', *ARGV

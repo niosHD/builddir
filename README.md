@@ -1,4 +1,4 @@
-﻿# Builddir
+# Builddir
 
 **builddir** is a little helper tool for C/C++ programmers to manage
 out-of-source build directories. It manages mappings between build directories
@@ -63,6 +63,14 @@ directory. Wrapper scripts for the most common build systems are provided
 which automatically specify this path when needed. It is therefore possible
 to simply call `configure [options]` or `cmake [options]` in the build
 directory without any source path.
+
+#### cmake extension for toolchain files
+
+Cross compilation with cmake usually requires a toolchain file which is often
+distributed with the source code itself. Using such a file requires the
+specification of the full path which kind of defeats the purpose of the wrapper.
+Therefore, an additional option `-A <ARCH_NAME>` has been added which expands
+into `-DCMAKE_TOOLCHAIN_FILE=<src_dir>/cmake/toolchain/<ARCH_NAME>.cmake`.
 
 ### Further operations (deleting, purging, ...)
 
