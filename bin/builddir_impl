@@ -35,7 +35,7 @@ EOS
 	opt :create,        "Create build directory if necessary"
 	opt :delete,        "remove + delete the build directory."
 	opt :help,          "Display this help message"
-	opt :purge,         "Delete all abandoned build directories without mapping"
+	opt :purge,         "Delete all abandoned build directories and mappings"
 	opt :remove,        "Remove connection between the src and the build directory"
 	opt :source,        "Get the source directory"
 	opt :verbose,       "Verbose mode for debugging", :short => "V"
@@ -77,9 +77,17 @@ mapping ||= []
 
 entry = Builddir.findMapping(mapping, currentDir)
 if opts[:purge]
+	# delete abandoned build directories and mappings
+	# (abandoned = no mapping or no source directory for a mapping)
 	buildDirs = Dir[File.join(buildBaseDir, "*")].select{|file| File.directory?(file)}
 	buildDirs.each do |directory|
 		entry = Builddir.findMapping(mapping, directory)
+		if entry && !File.exists?(entry[:srcDir])
+			puts "No source dir, removing mapping: #{entry[:srcDir]} <-> #{entry[:buildDir]}"
+			mapping.delete_at(entry[:index])
+			Builddir.saveMapping(mapping,mappingsFile)
+			entry = nil
+		end
 		if entry == nil
 			puts "Deleting: #{directory}"
 			FileUtils.rm_rf(directory)

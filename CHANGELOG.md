@@ -1,3 +1,9 @@
+## 0.1.3 (????-??-??)
+
+Features:
+
+  - `--purge` is extended to additionally delete build directories without source directory
+
 ## 0.1.2 (2014-11-27)
 
 Features:
