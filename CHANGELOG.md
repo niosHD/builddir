@@ -1,3 +1,9 @@
+## 0.1.4 (2018-10-16)
+
+Features:
+
+  - updated command line parser dependency to new name
+
 ## 0.1.3 (2016-05-16)
 
 Features:
