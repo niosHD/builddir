@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 require 'pathname'
-require 'trollop'
+require 'optimist'
 
 require 'builddir'
 
@@ -24,7 +24,7 @@ end
 # redirect stdout to stderr
 $stdout = $stderr
 
-p = Trollop::Parser.new do
+p = Optimist::Parser.new do
 	version "#{Builddir::NAME} Version #{Builddir::VERSION}"
 	banner <<-EOS
 Usage:
@@ -42,9 +42,9 @@ EOS
 end
 
 opts = {}
-Trollop::with_standard_exception_handling p do
+Optimist::with_standard_exception_handling p do
 	opts = p.parse ARGV
-	raise Trollop::HelpNeeded if ARGV.size() > 1 # show help screen
+	raise Optimist::HelpNeeded if ARGV.size() > 1 # show help screen
 end
 currentDir = Dir.pwd
 

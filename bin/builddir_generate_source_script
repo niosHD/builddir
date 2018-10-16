@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 require 'fileutils'
-require 'trollop'
+require 'optimist'
 
 require 'builddir'
 
-p = Trollop::Parser.new do
+p = Optimist::Parser.new do
 	version "#{Builddir::NAME} Version #{Builddir::VERSION}"
 	banner <<-EOS
 Generates the script which has to be sourced to change change directories with builddir.
@@ -17,9 +17,9 @@ EOS
 end
 
 opts = {}
-Trollop::with_standard_exception_handling p do
+Optimist::with_standard_exception_handling p do
 	opts = p.parse ARGV
-	raise Trollop::HelpNeeded if ARGV.size() > 1 # show help screen
+	raise Optimist::HelpNeeded if ARGV.size() > 1 # show help screen
 end
 
 file_path = File.join(Builddir.getGemLibdir, "data", "builddir_source_script")
